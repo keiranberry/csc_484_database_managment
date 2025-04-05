@@ -46,7 +46,8 @@ CREATE TABLE TypeInteraction (
 
 CREATE TABLE Collection (
     Id INT AUTO_INCREMENT PRIMARY KEY,
+    UserId INT NOT NULL,
     PokemonId INT NOT NULL,
-    NumberCaught INT NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,
     FOREIGN KEY (PokemonId) REFERENCES Pokemon(Id) ON DELETE CASCADE
 );

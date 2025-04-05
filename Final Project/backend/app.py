@@ -109,34 +109,42 @@ def getPokemonStrengths(pokemonId):
 
 # increment count of caught pokemon
 @app.route("/pokemon/<int:pokemonId>/catch", methods=["POST"])
-def incrementPokemonCaught(pokemonId):
+def catchPokemon(pokemonId):
     try:
+        data = request.get_json()
+        userId = data.get("userId")
+
+        if not userId:
+            return jsonify({"error": "Missing userId"}), 400
+
         conn = getDBConnection()
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO Collection (PokemonId, NumberCaught)
-            VALUES (%s, 1)
-            ON DUPLICATE KEY UPDATE NumberCaught = NumberCaught + 1;
-        """, (pokemonId,))
+            INSERT INTO Collection (UserId, PokemonId)
+            VALUES (%s, %s);
+        """, (userId, pokemonId))
         conn.commit()
         conn.close()
-        return jsonify({"message": "Pokemon caught count updated!"}), 200
+        return jsonify({"message": "Pokemon caught!"}), 200
     except Exception as e:
-        print("Error updating caught count:", e)
-        return jsonify({"error": "Failed to update caught count"}), 500
+        print("Error catching Pokemon:", e)
+        return jsonify({"error": "Failed to catch Pokemon"}), 500
 
 # get uncaught pokemon
-@app.route("/pokemon/uncaught", methods=["GET"])
-def getUncaughtPokemon():
+@app.route("/pokemon/uncaught/<int:userId>", methods=["GET"])
+def getUncaughtPokemon(userId):
     try:
         conn = getDBConnection()
         cursor = conn.cursor()
         cursor.execute("""
             SELECT p.id, p.name
             FROM Pokemon p
-            LEFT JOIN Collection c ON p.id = c.PokemonId
-            WHERE c.NumberCaught IS NULL OR c.NumberCaught = 0;
-        """)
+            WHERE p.id NOT IN (
+                SELECT PokemonId
+                FROM Collection
+                WHERE UserId = %s
+            );
+        """, (userId,))
         pokemonList = cursor.fetchall()
         conn.close()
         return jsonify(pokemonList)
