@@ -1,7 +1,16 @@
-setup instructions:
+setup process:
 - in MySQL workbench or similar, run 
 	- pokemonDBSetup.sql
 	- pokemonDBData.sql
 - python packages:
 	- pip install pymysql
+	- pip install flask
+	- pip install flask-cors
+	- pip install bcrypt
 - replace MySQL credentials in db.py with your credentials
+- ensure node.js is installed
+- run npm create vite@latest frontend -- --template vue-ts (you may not have to do this)
+- frontend folder:
+	- npm install
+	- npm install primevue@3.44.0 primeicons@6.0.1
+	- npm install axios

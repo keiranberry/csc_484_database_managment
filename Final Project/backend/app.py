@@ -152,6 +152,30 @@ def getUncaughtPokemon(userId):
         print("Error fetching uncaught Pokemon:", e)
         return jsonify({"error": "Failed to fetch uncaught Pokemon"}), 500
 
+# get the number of times a user has caught a specific pokemon
+@app.route("/pokemon/<int:pokemonId>/caught/<int:userId>", methods=["GET"])
+def getCaughtCount(pokemonId, userId):
+    try:
+        conn = getDBConnection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM Collection
+            WHERE UserId = %s AND PokemonId = %s;
+        """, (userId, pokemonId))
+        result = cursor.fetchone()
+        conn.close()
+
+        return jsonify({
+            "pokemonId": pokemonId,
+            "userId": userId,
+            "count": result["count"] if result else 0
+        }), 200
+    except Exception as e:
+        print("Error fetching caught count:", e)
+        return jsonify({"error": "Failed to fetch caught count"}), 500
+
+
 # get pokemon by the name of the region
 @app.route("/pokemon/region/<string:region>", methods=["GET"])
 def getPokemonByRegion(region):
