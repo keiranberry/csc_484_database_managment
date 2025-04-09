@@ -22,26 +22,26 @@
 </template>
 
 <script setup lang="ts">
-import InputText from 'primevue/inputtext'
-import Password from 'primevue/password'
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import { ref } from 'vue'
-import axios from 'axios'
-import { useToast } from 'primevue/usetoast'
-import { useRouter } from 'vue-router'
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
+import Button from 'primevue/button';
+import Card from 'primevue/card';
+import { ref } from 'vue';
+import axios from 'axios';
+import { useToast } from 'primevue/usetoast';
+import { useRouter } from 'vue-router';
 
-const router = useRouter()
-const toast = useToast()
+const router = useRouter();
+const toast = useToast();
 
 
-const username = ref('')
-const password = ref('')
+const username = ref('');
+const password = ref('');
 
 const handleLogin = async () => {
   try {
-    const alphanumericRegex = /^[a-zA-Z0-9]+$/
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     //username can either be alphanumeric or in a valid email format
     if (!username.value || (!alphanumericRegex.test(username.value) && !emailRegex.test(username.value))) {
@@ -51,7 +51,7 @@ const handleLogin = async () => {
         detail: 'Username must be alphanumeric or a valid email address.',
         life: 3000
         });
-        return
+        return;
     }
 
     //password cannot be empty
@@ -62,7 +62,7 @@ const handleLogin = async () => {
         detail: 'Password cannot be empty.',
         life: 3000
         });
-        return
+        return;
     }
 
     //try to login, either gets success or creates account
@@ -84,6 +84,7 @@ const handleLogin = async () => {
     //set local storage items to persist across sessions
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('username', username.value);
+    localStorage.setItem('userId', response.data.id.toString());
 
     router.push('/home');
   } catch (error: any) {

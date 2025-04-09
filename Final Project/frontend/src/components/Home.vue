@@ -9,11 +9,11 @@
             <Button label="Get Pokemon by Region" icon="pi pi-star" @click="router.push('/by-region')" />
             <Button label="Get Weaknesses for Pokemon" icon="pi pi-star" @click="router.push('/weaknesses')" />
             <Button label="Get Strengths for Pokemon" icon="pi pi-star" @click="router.push('/strengths')" />
+            <Button label="Get Pokemon Another is Weak To" icon="pi pi-star" @click="router.push('/weak-to')" />
+            <Button label="Get Pokemon Another is Strong Against" icon="pi pi-star" @click="router.push('/strong-against')" />
             <Button label="Log Capture of Pokemon" icon="pi pi-star" @click="router.push('/catch')" />
-            <Button label="Get Uncaught Pokemon" icon="pi pi-star" @click="router.push('/uncaught')" />
             <Button label="Get Number Caught" icon="pi pi-star" @click="router.push('/caught')" />
-            <Button label="Get Pokemon Weak to Another" icon="pi pi-star" @click="router.push('/weak-to')" />
-            <Button label="Get Pokemon Strong against Another" icon="pi pi-star" @click="router.push('/strong-against')" />
+            <Button label="Get Uncaught Pokemon" icon="pi pi-star" @click="router.push('/uncaught')" />
         </div>
         </template>
     </Card>
