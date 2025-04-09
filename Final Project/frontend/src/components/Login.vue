@@ -29,7 +29,9 @@ import Card from 'primevue/card'
 import { ref } from 'vue'
 import axios from 'axios'
 import { useToast } from 'primevue/usetoast'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const toast = useToast()
 
 
@@ -41,6 +43,7 @@ const handleLogin = async () => {
     const alphanumericRegex = /^[a-zA-Z0-9]+$/
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+    //username can either be alphanumeric or in a valid email format
     if (!username.value || (!alphanumericRegex.test(username.value) && !emailRegex.test(username.value))) {
         toast.add({
         severity: 'warn',
@@ -51,6 +54,7 @@ const handleLogin = async () => {
         return
     }
 
+    //password cannot be empty
     if (!password.value) {
         toast.add({
         severity: 'warn',
@@ -61,6 +65,7 @@ const handleLogin = async () => {
         return
     }
 
+    //try to login, either gets success or creates account
     const response = await axios.post('http://localhost:5000/login', {
       username: username.value,
       password: password.value
@@ -75,7 +80,14 @@ const handleLogin = async () => {
         closable: false,
       }
     });
+
+    //set local storage items to persist across sessions
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username', username.value);
+
+    router.push('/home');
   } catch (error: any) {
+    //if login fails for incorrect password or another reason, alert the user
     toast.add({
       severity: 'error',
       summary: 'Login Failed',

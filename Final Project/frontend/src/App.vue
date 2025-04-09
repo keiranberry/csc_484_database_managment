@@ -1,9 +1,8 @@
 <template>
-  <Toast/>
-  <Login/>
+  <Toast />
+  <RouterView />
 </template>
 
-<script setup lang="ts">
+<script setup>
 import Toast from 'primevue/toast'
-import Login from './components/Login.vue'
 </script>
