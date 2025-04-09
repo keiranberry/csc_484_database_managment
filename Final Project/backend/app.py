@@ -24,9 +24,51 @@ def getPokemon():
         print("Error fetching Pokemon:", e)
         return jsonify({"error": "Failed to fetch Pokemon"}), 500
 
+# get all generations in the database
+@app.route("/generations", methods=["GET"])
+def getGenerations():
+    try:
+        conn = getDBConnection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Generation")
+        generations = cursor.fetchall()
+        conn.close()
+        return jsonify(generations)
+    except Exception as e:
+        print("Error fetching Generations:", e)
+        return jsonify({"error": "Failed to fetch Generations"}), 500
+
+# get all regions in the database
+@app.route("/regions", methods=["GET"])
+def getRegions():
+    try:
+        conn = getDBConnection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Region")
+        regions = cursor.fetchall()
+        conn.close()
+        return jsonify(regions)
+    except Exception as e:
+        print("Error fetching Regions:", e)
+        return jsonify({"error": "Failed to fetch Regions"}), 500
+
+# get all types in the database
+@app.route("/types", methods=["GET"])
+def getTypes():
+    try:
+        conn = getDBConnection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Type")
+        types = cursor.fetchall()
+        conn.close()
+        return jsonify(types)
+    except Exception as e:
+        print("Error fetching Types:", e)
+        return jsonify({"error": "Failed to fetch Types"}), 500
+
 # get pokemon by type
-@app.route("/pokemon/type/<string:typeName>", methods=["GET"])
-def getPokemonByType(typeName):
+@app.route("/pokemon/type/<int:typeId>", methods=["GET"])
+def getPokemonByType(typeId):
     try:
         conn = getDBConnection()
         cursor = conn.cursor()
@@ -34,8 +76,8 @@ def getPokemonByType(typeName):
             SELECT p.id, p.name
             FROM Pokemon p
             JOIN Type t ON p.TypeOneId = t.Id OR p.TypeTwoId = t.Id
-            WHERE t.Name = %s;
-        """, (typeName,))
+            WHERE t.id = %s;
+        """, (typeId,))
         pokemonList = cursor.fetchall()
         conn.close()
         return jsonify(pokemonList)
@@ -176,9 +218,9 @@ def getCaughtCount(pokemonId, userId):
         return jsonify({"error": "Failed to fetch caught count"}), 500
 
 
-# get pokemon by the name of the region
-@app.route("/pokemon/region/<string:region>", methods=["GET"])
-def getPokemonByRegion(region):
+# get pokemon by the region
+@app.route("/pokemon/region/<int:regionId>", methods=["GET"])
+def getPokemonByRegion(regionId):
     try:
         conn = getDBConnection()
         cursor = conn.cursor()
@@ -186,8 +228,8 @@ def getPokemonByRegion(region):
             SELECT p.id, p.name
             FROM Pokemon p
             JOIN Region r ON p.GenerationId = r.GenerationId
-            WHERE r.name = %s;
-        """, (region,))
+            WHERE r.id = %s;
+        """, (regionId,))
         pokemonList = cursor.fetchall()
         conn.close()
         return jsonify(pokemonList)
@@ -261,18 +303,27 @@ def login():
             # if the user exists, we check to see if the password is right
             if bcrypt.checkpw(password.encode('utf-8'), user['PasswordHash'].encode('utf-8')):
                 conn.close()
-                return jsonify({"message": "Login successful!"}), 200
+                return jsonify({
+                    "message": "Login successful!",
+                    "id": user['Id'] 
+                }), 200
             else:
                 conn.close()
                 return jsonify({"error": "Incorrect password"}), 401
         else:
             # otherwise, we create the new user
-            password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            cursor.execute("INSERT INTO Users (Username, PasswordHash) VALUES (%s, %s)", (username, password_hash))
+            passwordHash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            cursor.execute("INSERT INTO Users (Username, PasswordHash) VALUES (%s, %s)", (username, passwordHash))
             conn.commit()
+
+            # get the new id
+            newUserId = cursor.lastrowid
             conn.close()
 
-            return jsonify({"message": "User created and logged in!"}), 201
+            return jsonify({
+                "message": "User created and logged in!",
+                "id": newUserId
+            }), 201
 
     except Exception as e:
         print("Error during login:", e)
