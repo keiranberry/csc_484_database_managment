@@ -14,3 +14,4 @@ setup process:
 	- npm install
 	- npm install primevue@3.44.0 primeicons@6.0.1
 	- npm install axios
+	- npm install vue-router
